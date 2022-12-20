@@ -50,11 +50,11 @@ class ProjectInput {
   // @autobind
   private submitHandler(event: Event) {
     event.preventDefault();
-    console.log(this.titleInputElement.value);
+    // console.log(this.titleInputElement.value);
   }
 
   private configure() {
-    this.element.addEventListener("submit", this.submitHandler);
+    this.element.addEventListener("submit", this.submitHandler.bind(this));
   }
 
   private attach() {
