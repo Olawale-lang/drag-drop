@@ -1,4 +1,5 @@
 // Project Type
+console.log("object");
 enum ProjectStatus {
   Active,
   Finished,
@@ -15,14 +16,23 @@ class Project {
 }
 
 // Project State Management
-type Listener = (items: Project[]) => void;
+type Listener<T> = (items: T[]) => void;
 
-class ProjectState {
-  private listeners: Listener[] = [];
+class State<T> {
+  protected listeners: Listener<T>[] = [];
+
+  addListener(listenerFn: Listener<T>) {
+    this.listeners.push(listenerFn);
+  }
+}
+
+class ProjectState extends State<Project> {
   private projects: Project[] = [];
   private static instance: ProjectState;
 
-  private constructor() {}
+  private constructor() {
+    super();
+  }
 
   static getInstance() {
     if (this.instance) {
@@ -30,10 +40,6 @@ class ProjectState {
     }
     this.instance = new ProjectState();
     return this.instance;
-  }
-
-  addListener(listenerFn: Listener) {
-    this.listeners.push(listenerFn);
   }
 
   addProject(title: string, description: string, numOfPeople: number) {
@@ -162,7 +168,6 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
     this.renderContent();
   }
 
-  
   configure() {
     projectState.addListener((projects: Project[]) => {
       const relevantProjects = projects.filter((prj) => {
@@ -176,7 +181,6 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
     });
   }
 
-  
   renderContent() {
     const listId = `${this.type}-projects-list`;
     this.element.querySelector("ul")!.id = listId;
@@ -215,18 +219,13 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
       "#people"
     ) as HTMLInputElement;
 
-
     this.configure();
-
   }
   configure() {
-
     this.element.addEventListener("submit", this.submitHandler.bind(this));
   }
 
-  renderContent(): void {
-    
-  }
+  renderContent(): void {}
 
   private gatherUserInput(): [string, string, number] | void {
     const enteredTitle = this.titleInputElement.value;
@@ -277,8 +276,6 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
       this.clearInputs();
     }
   }
-
- 
 
   // private attach() {
   //   this.hostElement.insertAdjacentElement("afterbegin", this.element);
